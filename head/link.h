@@ -1,26 +1,31 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#ifndef __LINK_H__
+#define __LINK_H__
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #define tail -1
 #define error -1
 
-typedef enum{false,true} bool;
+//typedef enum{false,true} bool;
 typedef int ElemType;
 typedef int Location;
 
-typedef LinkNode{
+struct Node{
     ElemType Data;
-    LinkNode* next;
-}LinkNode;
+    struct Node* next;
+};
+typedef struct Node LinkNode;
 
 typedef struct List{
     LinkNode *Head, *Tail;
     bool isEmpty;
-}LinkList;
+};
+typedef struct List LinkList;
 
 //初始化链表，返回一个规范空链表
 LinkList lsetup(){
-    LinkList* _l = (LinkList*)malloc(sizeof(struct List));
+    LinkList* _l = (LinkList*)malloc(sizeof(LinkList));
     _l->Head = _l->Tail = NULL;
     _l->isEmpty = true;
     return *_l;
@@ -137,7 +142,7 @@ void insert(LinkList* l, Location _loc, const ElemType _data){
     else{
         p = l->Head;
         while(--_loc){
-            if(p)
+            if(p->next)
                 p = p->next;
             else{
                 printf("Error! The location is wrongful!\n");
@@ -172,7 +177,7 @@ void pop(LinkList* l, Location _loc){
     else{
         p = l->Head;
         while(--_loc){
-            if(p->next)
+            if(p->next->next)
                 p = p->next;
             else{
                 printf("Error! The location is wrongful!\n");
@@ -181,7 +186,8 @@ void pop(LinkList* l, Location _loc){
         }
         LinkNode* temp = p->next->next;
         memset(p->next,0,sizeof(LinkNode));
-        p->next = p->next->next;
+        free(p->next);
+        p->next = temp;
         check(l);
         return;
     }
@@ -259,41 +265,12 @@ LinkList usdown(const LinkList l){
     return rl;
 }
 
+//连接两条链表
 LinkList connect(const LinkList _l1, const LinkList _l2){
     LinkList l1 = copy(_l1), l2 = copy(_l2);
     l1.Tail->next = l2.Head;
     check(&l1);
     return l1;
-}
-
-#if 1
-
-int main(){
-    LinkList l = lsetup(), l2 = lsetup();
-    for(ElemType i = 0; i < 10; i ++)
-        insert(&l,tail,i);
-    for(ElemType i = 10; i < 20; i ++)
-        insert(&l2,tail,i);
-    lout(l);
-    lout(l2);
-    LinkList l3 = connect(l,l2);
-    lout(l);
-    lout(l2);
-    lout(l3);
-    destory(&l3);
-    lout(l3);
-    return 1;
-}
-
-#else
-
-int main(){
-    LinkList l = lsetup();
-    for(ElemType i = 0; i < 10; i ++)
-        insert(&l,tail,i);
-    LinkList l2 = copy(l);
-    lout(l2);
-    return 1;
 }
 
 #endif
