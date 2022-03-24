@@ -8,10 +8,10 @@ int main(){
     for(ElemType i = 0; i < 10; i ++)
         insert(&l,tail,i);
     lout(connect(l,usdown(l)));
-    return 1;
+    return 0;
 }
 
-#else
+#elif 0
 
 int main(){
     LinkList l = lsetup();
@@ -23,7 +23,21 @@ int main(){
     scanf("%d%d",&loc,&data);
     insert(&l,loc,data);
     lout(l);
-    return 1;
+    return 0;
+}
+
+#else
+
+int main(){
+    LinkList l = lsetup();
+    create(&l);
+    lout(l);
+    if(palindrome(l))
+        printf("This link is a palindrome!\n");
+    else
+        printf("This link is not a palindrome!\n");
+    system("pause");
+    return 0;
 }
 
 #endif

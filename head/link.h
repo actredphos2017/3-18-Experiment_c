@@ -276,4 +276,21 @@ LinkList connect(const LinkList _l1, const LinkList _l2){
     return l1;
 }
 
+//判断回文
+bool palindrome(const LinkList _l){
+    if(_l.isEmpty)
+        return true;
+    LinkList l = usdown(_l);
+    LinkNode *op = _l.Head, *np = l.Head;
+    while(op){
+        if(op->Data == np->Data){
+            op = op->next;
+            np = np->next;
+        }
+        else
+            return false;
+    }
+    return true;
+}
+
 #endif
