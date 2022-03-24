@@ -17,7 +17,7 @@ struct Node{
 };
 typedef struct Node LinkNode;
 
-typedef struct List{
+struct List{
     LinkNode *Head, *Tail;
     bool isEmpty;
 };
@@ -67,9 +67,11 @@ void destory(LinkList* l){
     while(p[n%2]){
         p[(n+1)%2] = p[n%2]->next;
         memset(p[n%2],0,sizeof(LinkNode));
+        free(p[n%2]);
         n ++;
     }
     memset(l->Head,0,sizeof(LinkNode));
+    free(l->Head);
     check(l);
     return;
 }
@@ -170,6 +172,7 @@ void pop(LinkList* l, Location _loc){
         while(p->next != l->Tail)
             p = p->next;
         memset(p->next,0,sizeof(LinkNode));
+        free(p->next);
         l->Tail = p;
         check(l);
         return;
