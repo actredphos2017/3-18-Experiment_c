@@ -8,7 +8,7 @@
 #define error -1
 
 //typedef enum{false,true} bool;
-typedef int ElemType;
+typedef char ElemType;
 typedef int Location;
 
 struct Node{
@@ -95,6 +95,54 @@ LinkList copy(const LinkList l){
     return rl;
 }
 
+//返回链表元素个数
+int num(const LinkList l){
+    if(l.isEmpty)
+        return 0;
+    LinkNode *p = l.Head;
+    int n = 0;
+    while(p){
+        p = p->next;
+        n ++;
+    }
+    return n;
+}
+
+//局部复制链表
+LinkList partcp(const LinkList l, Location loc1, Location loc2){
+    loc1 = loc1<0?(num(l)-1):loc1;
+    loc2 = loc2<0?(num(l)-1):loc2;
+    if(loc1 > loc2){
+        Location temp = loc1;
+        loc1 = loc2;
+        loc2 = temp;
+    }
+    if(loc2+1 > num(l)){
+        printf("Error! The location is wrongful!\n");
+        return lsetup();
+    }
+    LinkList _l = copy(l);
+    LinkNode *p = _l.Head, *tp = NULL;
+    while(loc2--)
+        p = p->next;
+    while(p->next){
+        tp = p->next->next;
+        memset(p->next,0,sizeof(LinkNode));
+        free(p->next);
+        p->next = tp;
+        tp = NULL;
+    }
+    p = NULL;
+    while(loc1--){
+        tp = _l.Head->next;
+        memset(_l.Head,0,sizeof(LinkNode));
+        free(_l.Head);
+        _l.Head = tp;
+        tp = NULL;
+    }
+    return _l;
+}
+
 //返回某个元素的数据 *_loc 为下标*
 ElemType read(const LinkList l, Location _loc){
     LinkNode *p = l.Head;
@@ -107,19 +155,6 @@ ElemType read(const LinkList l, Location _loc){
         }
     }
     return p->Data;
-}
-
-//返回链表元素个数
-int num(const LinkList l){
-    if(l.isEmpty)
-        return 0;
-    LinkNode *p = l.Head;
-    int n = 0;
-    while(p){
-        p = p->next;
-        n ++;
-    }
-    return n;
 }
 
 //往链表中插入元素 *_loc 为下标*
@@ -196,7 +231,7 @@ void pop(LinkList* l, Location _loc){
     }
 }
 
-//用户初始化链表（若原链表非空则会格式化原链表）输入负数停止
+//用户初始化链表（若原链表非空则会格式化原链表）输入'!'时停止
 void create(LinkList* l){
     if(!l->isEmpty){
         printf("Warning! The link is not empty!\nThe original data will be destoryed!\n");
@@ -204,8 +239,10 @@ void create(LinkList* l){
     }
     ElemType _data;
     LinkNode* p = NULL;
-    while(scanf("%d",&_data) != EOF){
-        if(_data < 0)
+    while(scanf("%c",&_data) != EOF){
+        if(_data == ' ' || _data == '\n')
+            continue;
+        if(_data == '!')
             break;
         if(!p){
             l->Head = nsetup();
@@ -231,9 +268,9 @@ void lout(const LinkList l){
     LinkNode* p = l.Head;
     while(p){
         if(p == l.Head)
-            printf("%d",p->Data);
+            printf("%c",p->Data);
         else
-            printf(", %d",p->Data);
+            printf(", %c",p->Data);
         p = p->next;
     }
     printf("\n");
@@ -274,6 +311,26 @@ LinkList connect(const LinkList _l1, const LinkList _l2){
     l1.Tail->next = l2.Head;
     check(&l1);
     return l1;
+}
+
+//返回局部反转的链表
+LinkList partusdown(const LinkList l, Location loc1, Location loc2){
+    int n = num(l);
+    loc1 = loc1<0?(n-1):loc1;
+    loc2 = loc2<0?(n-1):loc2;
+    if(loc1 > loc2){
+        Location temp = loc1;
+        loc1 = loc2;
+        loc2 = temp;
+    }
+    if(loc1 == 0 && loc2 == n-1)
+        return usdown(l);
+    else if(loc1 == 0)
+        return connect(usdown(partcp(l,loc1,loc2)),partcp(l,loc2+1,tail));
+    else if(loc2 == n-1)
+        return connect(partcp(l,0,loc1-1),usdown(partcp(l,loc1,tail)));
+    else
+        return connect(connect(partcp(l,0,loc1-1),usdown(partcp(l,loc1,loc2))),partcp(l,loc2+1,tail));
 }
 
 //判断回文
